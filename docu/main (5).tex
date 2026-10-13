@@ -336,8 +336,61 @@ cumplirse entre las entradas y las salidas.
 
 \section{Elementos de diseño}
 
+\subsection{Arquitectura general del sistema}
 
+El proyecto implementa un sistema digital de control de acceso basado en una secuencia de entrada configurable por medio de interruptores y una señal de activación por botón. La arquitectura se organiza en bloques funcionales claramente separados: entrada, validación, almacenamiento de la combinación, control de estado y salida visual. En el módulo superior \texttt{top.sv} se integran estos elementos mediante conexiones de señales que permiten coordinar la lógica combinacional con la lógica secuencial.
 
+El diseño se apoya en una estructura jerárquica: los módulos pequeños describen funciones específicas y el módulo principal realiza la interconexión global del sistema. Este enfoque facilita la verificación individual de cada bloque y simplifica la depuración del comportamiento completo del circuito.
+
+\subsection{Bloques funcionales principales}
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Entrada y acondicionamiento de señales:} Los interruptores \texttt{SW[0:3]} representan las entradas del código, mientras que \texttt{KEY[0]} y los sensores de apertura/cierre de puerta (	exttt{SW\_OPEN}, \texttt{SW\_CLOSED}) se utilizan para activar la validación y la secuencia de operación del sistema. La señal de reloj principal, \texttt{CLOCK\_50}, se deriva hacia un divisor de frecuencia para reducir la tasa de operación y sincronizar eventos del sistema.
+
+    \item \textbf{Codificador:} El módulo \texttt{encoder} transforma la información de entrada en una representación comprimida de tres bits (	exttt{B0}, \texttt{B1}, \texttt{B2}). Esta etapa permite reducir la cantidad de señales que luego serán serializadas y evaluadas por el bloque de comprobación.
+
+    \item \textbf{Validador de combinación:} El módulo \texttt{verifier} evalúa si la configuración de entradas cumple con una condición lógica de consistencia antes de aceptar la secuencia. Su lógica combina operaciones NOT, OR y AND para detectar entradas inválidas y avisar al resto del sistema cuando la combinación no es correcta.
+
+    \item \textbf{Serialización y comprobación:} El módulo \texttt{serializer} toma los bits generados por el codificador y los desplaza mediante flip-flops para comparar la secuencia con una combinación esperada. El bloque \texttt{psw\_checker} recibe las señales ya ordenadas y genera la señal \texttt{CORRECT}, que indica si la secuencia es válida.
+
+    \item \textbf{Controlador de estados:} El módulo \texttt{state\_controller} es el núcleo de la máquina de estados del sistema. Gestiona la condición de apertura y cierre de la puerta, además de generar señales de control como \texttt{OPENING}, \texttt{CLOSING}, \texttt{OPENED\_out}, \texttt{E0} y \texttt{E1}. La lógica se apoya en un latch SR y en contadores basados en flip-flops para detectar eventos de transición y mantener estados coherentes.
+
+    \item \textbf{Señales de salida:} El decodificador de anuncio enlaza los estados y genera la codificación para el display de siete segmentos (	exttt{HEX0}). Además, se conectan LEDs para mostrar el estado del proceso: apertura, cierre y validación incorrecta.
+\end{itemize}
+
+\subsection{Diseño temporal y de sincronización}
+
+El sistema utiliza un reloj principal de 50 MHz que se convierte en una señal más lenta mediante el divisor \texttt{clock\_divider}. Esta técnica es común en diseño digital porque evita que señales de control cambien demasiado rápido para ser observadas o procesadas por la lógica secuencial. El reloj lento permite que la máquina de estados avance en pasos perceptibles y evita problemas de ruido o de sincronización de señales de entrada.
+
+La estructura del divisor usa flip-flops en configuración tipo ripple, en la que cada etapa depende del estado anterior. Esto genera una frecuencia de salida aproximada de 1.5 Hz, adecuada para pulsos de activación y para controlar la dinámica de apertura y cierre del sistema.
+
+\subsection{Diseño de la máquina de estados}
+
+La lógica de control no es un simple circuito combinacional: incluye memorias de estado y transiciones que dependen de señales externas como el botón de acción, la validación y el estado físico de la puerta. El módulo de control produce una secuencia lógica que representa los estados de:\
+
+\begin{itemize}[leftmargin=1.5em]
+    \item espera de ingreso,
+    \item validación de la contraseña,
+    \item apertura,
+    \item cierre,
+    \item señal de error por combinación inválida.
+\end{itemize}
+
+La salida \texttt{OPENING} indica que el sistema está ejecutando la apertura, mientras que \texttt{CLOSING} representa la fase de cierre. El uso de señales de estado explícitas facilita la depuración y permite documentar claramente la intención funcional del circuito.
+
+\subsection{Principios de diseño aplicados}
+
+El proyecto refleja varios principios fundamentales del diseño digital usando HDL:
+
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Modularidad:} cada funcionalidad se implementa en un módulo independiente y reutilizable.
+    \item \textbf{Sincronización:} la lógica secuencial se apoya en flip-flops para evitar inconsistencias causadas por cambios simultáneos de señales.
+    \item \textbf{Separación de lógica combinacional y secuencial:} los bloques como el codificador y el comprobador operan en lógica combinacional, mientras que la máquina de estados y los registros gestionan el historial de operación.
+    \item \textbf{Verificación de comportamiento:} al separar validación, serialización y control de salida, es posible validar cada etapa de forma aislada y luego integrar el sistema final.
+    \item \textbf{Escalabilidad:} la arquitectura admite cambios en la secuencia de entrada o en la lógica de salida sin depender de una sola estructura monolítica.
+\end{itemize}
+
+En conjunto, el sistema demuestra un diseño de hardware expresado mediante SystemVerilog, donde el conjunto de módulos y señales se organiza para cumplir una función de control segura y verificable en un dispositivo FPGA.
 
 \begin{comment}
 \begin{figure}[H]
