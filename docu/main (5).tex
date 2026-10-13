@@ -12,7 +12,8 @@
 \usepackage{courier}
 
 % ── Idioma
-\usepackage[spanish,es-indentfirst]{babel}
+\usepackage[spanish]{babel}
+\usepackage{indentfirst}
 
 % ── Márgenes
 \usepackage[left=2.54cm, right=2.54cm, top=2.54cm, bottom=2.54cm]{geometry}
@@ -155,12 +156,67 @@ Además de la síntesis, otro de los propósitos fundamentales de los HDL es la 
 
 \subsection{¿Por qué un HDL como System Verilog tiene funciones que no se pueden sintetizar como por ejemplo \textit{wait}?}
 
-Lorem ipsum
+Un lenguaje de descripción de hardware (HDL), como SystemVerilog,
+permite describir circuitos digitales y también desarrollar
+modelos para simulación y verificación. Por esta razón, incluye
+construcciones que son útiles para representar el comportamiento
+durante una simulación, pero que no necesariamente corresponden
+a una estructura de hardware que una herramienta pueda sintetizar
+\cite{ieee2024systemverilog}
+
+Un ejemplo es la sentencia \texttt{wait}, que suspende la
+ejecución de un proceso hasta que se cumple una condición.
+Por ejemplo, la instrucción \texttt{wait (ready);} detiene
+temporalmente dicho proceso de simulación hasta que la señal
+\texttt{ready} sea verdadera. Sin embargo, esta sentencia no
+representa por sí misma un componente físico específico, como
+una compuerta lógica, un multiplexor o un registro.
+
+En un circuito físico, la lógica continúa operando de acuerdo
+con sus conexiones y señales de control; no ejecuta instrucciones
+secuenciales del mismo modo que un programa de software. Por lo
+tanto, para implementar una funcionalidad equivalente, normalmente
+se requiere describir explícitamente la lógica combinacional o
+secuencial correspondiente. La documentación de síntesis de
+Vivado indica que los controles temporales procedurales no están
+soportados por su sintetizador
+\cite{amd2026svconstructs}
+
+Es importante distinguir entre que una construcción sea válida
+en SystemVerilog y que sea sintetizable. Una sentencia puede
+utilizarse correctamente en un banco de pruebas (\textit{testbench})
+para controlar la simulación, sin que pueda emplearse directamente
+en una descripción RTL destinada a implementarse en una FPGA.
 
 \subsection{¿Por qué no es correcto usar la palabra compilar (como un compilador) para HDLs?}
 
-Lorem ipsum
+La palabra \textit{compilar} no es incorrecta en todos los
+contextos relacionados con los HDLs. El estándar IEEE 1800-2023
+define la compilación como el proceso de analizar el código fuente
+y comprobar aspectos sintácticos y semánticos. También define la
+elaboración, que permite establecer la jerarquía de módulos,
+resolver parámetros y determinar sus interconexiones
+\cite{ieee2024systemverilog}
 
+No obstante, utilizar \textit{compilar} como sinónimo de convertir
+directamente una descripción HDL en hardware puede resultar
+impreciso. En un lenguaje de programación convencional, el
+compilador normalmente transforma el código fuente en una
+representación ejecutable por un procesador. En cambio, en el
+diseño digital, la síntesis interpreta la descripción del circuito,
+infiere los elementos lógicos necesarios y genera una representación
+estructural, por ejemplo, una lista de conexiones o
+\textit{netlist}, que posteriormente puede mapearse a los recursos
+de un dispositivo programable
+\cite{amd2026synthesis}
+
+Por consiguiente, es válido hablar de compilación cuando se hace
+referencia a la etapa de análisis del código SystemVerilog. Sin
+embargo, cuando se describe específicamente la transformación
+de una descripción RTL en hardware, el término más preciso es
+\textit{síntesis}. En el flujo de diseño, la síntesis se distingue
+de las etapas posteriores de implementación física, como la
+ubicación y el enrutamiento de los recursos de la FPGA.
 
 
 
@@ -194,7 +250,89 @@ En las industrias espacial y de defensa los lenguajes de descripción de hardwar
 \subsection{¿Qué es un modelo estructural y un modelo comportamental? ¿Por qué se le dice caja
 transparente al diseño estructural? Muestre una diferencia.}
 
+\subsubsection{Modelo estructural}
 
+Un modelo estructural describe un circuito mediante la
+instanciación de componentes y la especificación explícita de
+sus conexiones. Estos componentes pueden ser compuertas lógicas,
+módulos previamente definidos u otros bloques de hardware.
+El diseñador indica cuáles son los elementos que forman el
+circuito y cómo se interconectan entre sí
+\cite{amd2026synthesis}
+
+Se denomina \textit{caja transparente} o \textit{caja blanca}
+porque su descripción permite observar cómo está construido
+internamente el circuito: se identifican sus componentes,
+las conexiones entre ellos y, cuando se incluyen, las señales
+intermedias. Esto facilita examinar la estructura y seguir el
+recorrido de las señales.
+
+\subsubsection{Modelo comportamental}
+
+Un modelo comportamental describe qué debe hacer el circuito
+a partir de sus entradas y de las condiciones establecidas,
+sin especificar necesariamente cada compuerta ni todas las
+conexiones internas. En SystemVerilog, puede expresarse mediante
+asignaciones, estructuras condicionales y bloques procedurales
+como \texttt{always\_comb}.
+
+A partir de esta descripción, una herramienta de síntesis puede
+inferir la estructura lógica que implementa el comportamiento
+especificado, siempre que se utilicen construcciones compatibles
+con la síntesis y que el diseño describa una función de hardware
+realizable (\parencite{amd2026synthesis}).
+
+\subsubsection{Ejemplo de diferencia entre ambos modelos}
+
+Se puede ilustrar la diferencia utilizando un sumador completo,
+cuyas entradas son los bits \texttt{a}, \texttt{b} y
+\texttt{cin}, y cuyas salidas son \texttt{suma} y \texttt{cout}.
+
+\paragraph{Modelo estructural.}
+
+En este ejemplo se instancian explícitamente compuertas XOR,
+AND y OR. Las señales intermedias \texttt{t1}, \texttt{t2} y
+\texttt{t3} muestran cómo se conectan los componentes para
+generar el acarreo.
+
+\begin{verbatim}
+module sumador_estructural (
+    input  wire a, b, cin,
+    output wire suma, cout
+);
+    wire t1, t2, t3;
+
+    xor (suma, a, b, cin);
+    and (t1, a, b);
+    and (t2, a, cin);
+    and (t3, b, cin);
+    or  (cout, t1, t2, t3);
+endmodule
+\end{verbatim}
+
+\paragraph{Modelo comportamental.}
+
+En este caso se especifican las expresiones lógicas que determinan
+las salidas. No se instancian explícitamente las compuertas ni se
+declaran señales intermedias para construir el circuito.
+
+\begin{verbatim}
+module sumador_comportamental (
+    input  logic a, b, cin,
+    output logic suma, cout
+);
+    always_comb begin
+        suma = a ^ b ^ cin;
+        cout = (a & b) | (a & cin) | (b & cin);
+    end
+endmodule
+\end{verbatim}
+
+Ambos modelos describen la misma función lógica. La diferencia
+principal está en el nivel de abstracción: el modelo estructural
+especifica los componentes y sus interconexiones, mientras que
+el comportamental expresa las relaciones lógicas que deben
+cumplirse entre las entradas y las salidas.
 
 \section{Elementos de diseño}
 
