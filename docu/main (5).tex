@@ -1,0 +1,218 @@
+\documentclass[12pt,letterpaper]{article}
+
+% ── Codificación y fuentes
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{palatino}
+\usepackage{microtype}
+\usepackage{minted}
+\usepackage{comment}
+\sloppy
+\usepackage{mathpazo}
+\usepackage{courier}
+
+% ── Idioma
+\usepackage[spanish,es-indentfirst]{babel}
+
+% ── Márgenes
+\usepackage[left=2.54cm, right=2.54cm, top=2.54cm, bottom=2.54cm]{geometry}
+
+% ── Gráficos
+\usepackage{graphicx}
+\usepackage{float}
+
+% ── Hipervínculos
+\usepackage[colorlinks=true, linkcolor=black, urlcolor=black]{hyperref}
+
+% ── Pie de página 
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\thepage}
+
+% ── Bloques de código
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{codebackground}{rgb}{0.9412, 0.9412, 0.9412}
+\definecolor{codenumber}{rgb}{0.4,0.4,0.4}
+
+\lstset{
+  backgroundcolor  = \color{codebackground},
+  basicstyle       = \small\ttfamily,
+  numbers          = left,
+  numberstyle      = \small\ttfamily\color{codenumber},
+  numbersep        = 8pt,
+  stepnumber       = 1,
+  frame            = none,
+  breaklines       = true,
+  tabsize          = 2,
+  showstringspaces = false,
+  aboveskip        = 6pt,
+  belowskip        = 6pt,
+  language         = C++,
+  keepspaces       = true,
+  columns          = fixed,
+  basewidth        = 0.5em,
+}
+
+% ── Cuadros
+\usepackage[most]{tcolorbox}
+
+\tcbset{
+  blacktitlebox/.style={
+    colback     = white,
+    colframe    = black,
+    colbacktitle= black,
+    coltitle    = white,
+    fonttitle   = \normalfont,
+    arc         = 4pt,
+    boxrule     = 0.8pt,
+    titlerule   = 0pt,
+    left        = 6pt,
+    right       = 6pt,
+    top         = 6pt,
+    bottom      = 6pt,
+    toptitle    = 3pt,
+    bottomtitle = 3pt,
+  }
+}
+
+% ── Listas
+\usepackage{enumitem}
+
+% ── Separación de párrafos
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+% ── PORTADA
+\thispagestyle{empty}
+
+\begin{center}
+  \includegraphics[width=7cm]{tec.png}
+\vspace{1.2cm}
+
+
+  \Large\textbf{Tarea I}\\
+  \vspace{5pt}
+  \Large\textbf{Diseño de sistema usando HDL}
+\end{center}
+
+\vspace{10pt}
+\noindent\rule{\linewidth}{1pt}
+\vspace{0.5cm}
+
+\noindent\hspace{1.8cm}
+\begin{tabular}{@{}ll@{}}
+  \vspace{7pt}
+  \textbf{Institución:} & Instituto Tecnológico de Costa Rica \\[2pt]
+  \vspace{7pt}
+  \textbf{Escuela:}     & Ingeniería en Computadores \\[2pt]
+  \vspace{7pt}
+  \textbf{Curso:}       & Fundamentos de Arquitectura de Computadores (CE-1107) \\[2pt]
+  \vspace{7pt}
+  \textbf{Profesor:} & Dr. Luis Alberto Chavarría \\[2pt]
+   \vspace{7pt}
+  \textbf{Estudiantes:} &
+  \begin{tabular}[t]{@{}l@{}}
+    Alexander Angulo Serrano \\[2pt]
+    Jose Manuel Chaves Chacón \\[2pt]
+    Kendall Fernández Obando \\[2pt]
+    Guillermo Sánchez Cedeño
+  \end{tabular} \\[2pt]
+  \vspace{7pt}
+  \textbf{Semestre:}    & II Semestre 2026 \\[2pt]
+  \vspace{7pt}
+  \textbf{Fecha:}       & 13 de octubre de 2026 \\
+\end{tabular}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\thispagestyle{empty}
+\tableofcontents
+
+
+\newpage
+\setcounter{page}{1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Teoría}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{¿Qué es un HDL?}
+
+Un lenguaje de descripción de hardware, HDL por sus siglas en inglés, es un lenguaje especializado para describir hardware, cuyo comportamiento es concurrente y no una secuencia de instrucciones. Permite describir las compuertas lógicas, las máquinas secuenciales y los módulos funcionales, así como su interconexión y control dentro de un sistema digital \cite{lipovski1977}, de modo que una herramienta de diseño asistido por computadora (CAD) pueda producir una \textit{netlist} con las compuertas optimizadas y sus conexiones, en un proceso llamado síntesis \cite{harris2007}. 
+
+Además de la síntesis, otro de los propósitos fundamentales de los HDL es la simulación de la lógica, la cual permite verificar que los \textit{inputs} aplicados a un módulo resulten en los \textit{outputs} correctos. La simulación es importante porque permite corregir y debuggear los sistemas de hardware antes de construirlos \cite{harris2007}. 
+
+\subsection{¿Por qué un HDL como System Verilog tiene funciones que no se pueden sintetizar como por ejemplo \textit{wait}?}
+
+Lorem ipsum
+
+\subsection{¿Por qué no es correcto usar la palabra compilar (como un compilador) para HDLs?}
+
+Lorem ipsum
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{¿Cuáles son tres ejemplos de lenguajes HDL? ¿Cuáles industrias los usan más habitualmente?}
+
+\subsubsection{VHDL}
+El VHDL fue desarrollado originalemnte en 1981 por el Departamento de Defensa de EE.UU. para describir la estructura y funcionamiento del hardware. Tiene raíces en el lenguaje de programación de Ada. La IEEE lo estandarizó en 1987 (IEEE STD 1076). El VHDL primero se previó para documentar, pero finalmente se adoptó para los procesos de simulación y síntesis \cite{harris2007}.
+
+\subsubsection{Verilog}
+Verilog es un HDL desarrollado en 1984 como lenguaje propietario para simulación de lógica. En 1990 se convirtió en un estándar abierto y cinco años después, en estándar de IEEE (IEEE STD 1364) \cite{harris2007}.
+
+\subsubsection{SystemVerilog}
+SystemVerilog es un HDL utilizado para modelar, simular y verificar sistemas electrónicos. Surgió de la combinación de Verilog con Superlog y OpenVera. Superlog aportó sintaxis para aumentar la productividad en el diseño, como \textit{struct} y \textit{enum}, mientras que OpenVera mejoró la capacidad de expresar aserciones, lo que facilita la verificación en simulación. Además, incorporó la programación orientada a objetos, que se usa comúnmente en verificación. Fue estandarizado por primera vez en 2005 (IEEE STD 1800-2005) y su revisión de 2009 integró Verilog (IEEE STD 1364) como un subconjunto del lenguaje \cite{systemverilogdev}.
+
+\subsubsection{HDLs en semiconductores}
+
+Los HDL son fundamentales en las industrias de semiconductores y microelectrónica, pues cumplen un rol primordial en el diseño de los circuitos integrados de aplicación específica (ASIC) y procesadores \cite{smith1998hdl}. Los ingenieros utilizan lenguajes como Verilog como una herramienta para describir la lógica de los circuitos antes de implementarla en el hardware \cite{Ansari2026}. Esto además permite indentificar los problemas en simulación, lo que previene construir semiconductores con errores de diseño y le permite a las compañías ahorrar millones de dólares \cite{harris2022hardware}.
+
+\subsubsection{HDLs en telecomunicaciones}
+
+En la industria de las telecomunicaciones, los HDL se utilizan ampliamente \cite{saranyanandhini2025hdl}. La creciente necesidad de transmitir datos de forma segura ha impulsado la implementación de algoritmos de encriptación directamente en hardware \cite{saranyanandhini2025hdl}, y los HDL permiten diseñar estas soluciones para aplicaciones que requieren procesamiento de alta velocidad, como el procesamiento de datos y la encriptación de las comunicaciones en redes 5G \cite{visconti2021fpga}. Las \textit{field-programmable gate arrays} (FPGA) son ampliamente utilizadas en la construcción de estas soluciones \cite{kumar2013network} \cite{visconti2021fpga}, y para su diseño, la utilización de los HDL resulta fundamental \cite{smith1998hdl}.
+
+\subsubsection{HDLs en la industria espacial y de defensa}
+
+En las industrias espacial y de defensa los lenguajes de descripción de hardware también tienen un papel relevante, pues se utilizan fundamentalmente en la fabricación de ASICs y FPGAs especialemnte diseñados para utilizarse en satélites \cite{shim2024survey}. Además, como se mencionó anteriormente, el mismo VHDL fue desarrollado por el Programa de Circuitos Integrados de Gran Velocidad del Departamento de Defensa de EE.UU. \cite{harris2007} que tuvo como objetivo crea circuitos integrados de silicio de ultra alto rendimiento y alta densidad de señal para aplicaciones militares \cite{thornton1982very}, así como diseñar componentes capaces de tolerar radiación ionizante y efectos de pulso electromagnético (EMP) en el espacio o en entornos de guerra \cite{ieee_technav_vhsic}. 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{¿Qué es un modelo estructural y un modelo comportamental? ¿Por qué se le dice caja
+transparente al diseño estructural? Muestre una diferencia.}
+
+
+
+\section{Elementos de diseño}
+
+
+
+
+\begin{comment}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.7\textwidth]{handshake.png}
+\caption{Flujo del handshake TLS entre cliente y servidor \cite{cloudflare}.}
+\label{fig:handshake}
+\end{figure}
+\end{comment}
+
+
+\newpage
+\bibliographystyle{IEEEtran} 
+\bibliography{references}
+
+\end{document}
