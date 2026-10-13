@@ -1,24 +1,27 @@
-`default_nettype none
-
 module top(
-    input  wire CLOCK_50,    
+    input  wire CLOCK_50,  
     input  wire [3:0] KEY,   
     input  wire [9:0] SW,    
     output wire [9:0] LEDR,  
     output wire [6:0] HEX0   
 );
 
-    wire slow_clk;
-    clock_divider U_CLOCK (
-        .CLK_50(CLOCK_50),
-        .CLK_OUT(slow_clk)
-    );
+
 
     wire S1 = SW[0];
     wire S2 = SW[1];
     wire S3 = SW[2];
     wire S4 = SW[3];
-    wire BTN = ~KEY[0]; 
+    
+    wire btn_raw = ~KEY[0]; 
+    wire BTN; 
+
+    debouncer U_DEBOUNCE (
+        .CLK(CLOCK_50),
+        .BTN_IN(btn_raw),
+        .BTN_OUT(BTN)
+    );
+
     wire SW_CLOSED = SW[8]; 
     wire SW_OPEN   = SW[9]; 
 
